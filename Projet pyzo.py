@@ -20,12 +20,11 @@ data = pd.read_csv("/Users/carll/Documents/EIVP/IVP1/Python/Projet/EIVP_KM.csv",
 def courbes(v,capteur):
     ld=Converttime(capteur)
     x=matplotlib.dates.date2num(ld)
-    y=data[data.id==capteur].data
+    y=data[data.id==capteur][v]
     matplotlib.pyplot.plot_date(x,y)
     plt.show()
 
-# ld=Converttime(1)
 # x=matplotlib.dates.date2num(ld)
-# y=data[data.id==1].lum
+# y=data[data.id==2].lum
 # matplotlib.pyplot.plot_date(x,y)
 # plt.show()
