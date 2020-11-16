@@ -13,7 +13,7 @@ def Converttime(n):
      l=[]
      # Création de la liste des dates
      for i in range(L):
-         l.append(datetime.datetime.strptime(data.sent_at.loc[i+data[data.id==n].index[0]], "%Y-%m-%d %H:%M:%S %z"))
+         l.append(datetime.datetime.strptime(data.sent_at.loc[data[data.id==n].index[i]], "%Y-%m-%d %H:%M:%S %z"))
          # Ajout à la liste la chaine de caractère sent_at convertie en un objet datetime
      return l
 
@@ -22,13 +22,21 @@ def courbes(v,capteur):
     x=matplotlib.dates.date2num(ld)
     y=data[data.id==capteur][v]
     matplotlib.pyplot.plot_date(x,y)
+    plt.xticks(rotation='vertical')
+    plt.xlabel("temps")
+    plt.ylabel(v)
+    plt.title(v+" en fonction du temps")
     plt.show()
 
 # x=matplotlib.dates.date2num(ld)
 # y=data[data.id==2].lum
 # matplotlib.pyplot.plot_date(x,y)
 # plt.show()
-
+# plt.title("")
+# plt.xlabel("")
+# plt.ylabel("")
+# plt.legend()
+# plt.xticks("")
 
 # def max(v,capteur):
 #     if capteur==0:
