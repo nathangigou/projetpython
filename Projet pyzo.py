@@ -81,15 +81,29 @@ def courbes(v,capteur):
 #         return s/(len(M))
 
 
-def variance(liste):
-    if len(liste)==0 or len(liste)==1:
-        return 0
+def variance(v,capteur):
+    if capteur==0:
+        L=data[data.id==capteur][v]
         a=0
-    for i in range(1,len(liste)):
-        a+= (liste[i]-moyenne(liste))**2
-    return a/len(liste)
+        if len(L)==0 or len(L)==1:
+            return 0
+        else:
+            for i in range(1,len(L)):
+                a+=L[i]**2
+            return a/len(L)-moyenne(v,capteur)**2
+    else:
+        L=data[data.id==capteur][v]
+        lr=data[data.id==capteur].index[0]
+        a=0
+        if len(L)==0 or len(L)==1:
+            return 0
+        else:
+            for i in range(1,len(L)):
+                a+=(L[i+lr])**2
+            return a/len(L)-moyenne(v,capteur)**2
 
-# ecart_type=(variance(liste))**(0.5)
+def ecart_type(v,capteur):
+    return (variance(v,capteur))**(0.5)
 
 def quicksort(t):
     if t == []:
