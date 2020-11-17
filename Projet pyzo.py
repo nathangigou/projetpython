@@ -38,55 +38,55 @@ def courbes(v,capteur):
 # plt.legend()
 # plt.xticks("")
 
-# def max(v,capteur):
-#     if capteur==0:
-#         L=data[v]
-#         maxi=L[0]
-#         for i in range(1,len(L)):
-#             if L[i]>=maxi:
-#                 maxi=L[i]
-#         return maxi
-#     else:
-#         L=data[data.id==capteur][v]
-#         lr=data[data.id==capteur].index[0]
-#         maxi=L[0+lr]
-#         for i in range(1+lr,len(L)+lr):
-#             if L[i]>=maxi:
-#                 maxi=L[i]
-#         return maxi
-#
-# def min(v,capteur):
-#     if capteur==0:
-#         L=data[v]
-#         mini=L[0]
-#         for i in range(1,len(L)):
-#             if L[i]<=mini:
-#                 mini=L[i]
-#         return mini
-#     else:
-#         L=data[data.id==capteur][v]
-#         lr=data[data.id==capteur].index[0]
-#         mini=L[0+lr]
-#         for i in range(1+lr,len(L)+lr):
-#             if L[i]<=mini:
-#                 mini=L[i]
-#         return mini
-#
-#
-# def moyenne(v,capteur):
-#     if capteur==0:
-#         s=0
-#         M=data[v]
-#         for i in range(len(M)):
-#             s+=M[i]
-#         return s/(len(M))
-#     else:
-#         s=0
-#         M=data[data.id==capteur][v]
-#         lr=data[data.id==capteur].index[0]
-#         for i in range(len(M)):
-#             s+=M[i+lr]
-#         return s/(len(M))
+def max(v,capteur):
+    if capteur==0:
+        L=data[v]
+        maxi=L[0]
+        for i in range(1,len(L)):
+            if L[i]>=maxi:
+                maxi=L[i]
+        return maxi
+    else:
+        L=data[data.id==capteur][v]
+        lr=data[data.id==capteur].index[0]
+        maxi=L[0+lr]
+        for i in range(1+lr,len(L)+lr):
+            if L[i]>=maxi:
+                maxi=L[i]
+        return maxi
+
+def min(v,capteur):
+    if capteur==0:
+        L=data[v]
+        mini=L[0]
+        for i in range(1,len(L)):
+            if L[i]<=mini:
+                mini=L[i]
+        return mini
+    else:
+        L=data[data.id==capteur][v]
+        lr=data[data.id==capteur].index[0]
+        mini=L[0+lr]
+        for i in range(1+lr,len(L)+lr):
+            if L[i]<=mini:
+                mini=L[i]
+        return mini
+
+
+def moyenne(v,capteur):
+    if capteur==0:
+        s=0
+        M=data[v]
+        for i in range(len(M)):
+            s+=M[i]
+        return s/(len(M))
+    else:
+        s=0
+        M=data[data.id==capteur][v]
+        lr=data[data.id==capteur].index[0]
+        for i in range(len(M)):
+            s+=M[i+lr]
+        return s/(len(M))
 
 
 def variance(v,capteur):
@@ -113,16 +113,23 @@ def variance(v,capteur):
 def ecart_type(v,capteur):
     return (variance(v,capteur))**(0.5)
 
-def quicksort(t):
-    if t == []:
-        return []
+# def quicksort(t):
+#     if t == []:
+#         return []
+#     else:
+#         pivot = t[0]
+#     t1 = []
+#     t2 = []
+#     for x in t[1:]:
+#         if x<pivot:
+#            t1.append(x)
+#         else:
+#            t2.append(x)
+#     return quicksort(t1)+[pivot]+quicksort(t2)
+
+def mediane(v,capteur):
+    sdata=data.sort_values(v)
+    if capteur==0:
+        return data[v].loc[int(np.around((len(sdata[v])+1)/2,0))]
     else:
-        pivot = t[0]
-    t1 = []
-    t2 = []
-    for x in t[1:]:
-        if x<pivot:
-           t1.append(x)
-        else:
-           t2.append(x)
-    return quicksort(t1)+[pivot]+quicksort(t2)
+        return data[v].loc[int(np.around((len(sdata[sdata.id==capteur][v])+1)/2,0))]
