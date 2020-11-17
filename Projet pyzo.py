@@ -13,7 +13,7 @@ def Converttime(n):
      l=[]
      # Création de la liste des dates
      for i in range(L):
-         l.append(datetime.datetime.strptime(data.sent_at.loc[data[data.id==n].index[i]], "%Y-%m-%d %H:%M:%S %z"))
+         l.append(datetime.datetime.strptime(data.sent_at.loc[data[data.id==n].index[i]], "%Y-%m-%d %H:%M:%S%z"))
          # Ajout à la liste la chaine de caractère sent_at convertie en un objet datetime
      return l
 
@@ -21,7 +21,7 @@ def courbes(v,capteur):
     ld=Converttime(capteur)
     x=matplotlib.dates.date2num(ld)
     y=data[data.id==capteur][v]
-    matplotlib.pyplot.plot_date(x,y)
+    matplotlib.pyplot.plot_date(x,y,linestyle='solid', markersize=0)
     plt.xticks(rotation='vertical')
     plt.xlabel("temps")
     plt.ylabel(v)
@@ -93,22 +93,24 @@ def variance(v,capteur):
     if capteur==0:
         L=data[data.id==capteur][v]
         a=0
+        moy=moyenne(v,capteur)
         if len(L)==0 or len(L)==1:
             return 0
         else:
             for i in range(1,len(L)):
-                a+=L[i]**2
-            return a/len(L)-moyenne(v,capteur)**2
+                a+=(L[i]-moy)**2
+            return a/len(L)
     else:
         L=data[data.id==capteur][v]
         lr=data[data.id==capteur].index[0]
         a=0
+        moy=moyenne(v,capteur)
         if len(L)==0 or len(L)==1:
             return 0
         else:
             for i in range(1,len(L)):
-                a+=(L[i+lr])**2
-            return a/len(L)-moyenne(v,capteur)**2
+                a+=(L[i+lr]-moy)**2
+            return a/len(L)
 
 def ecart_type(v,capteur):
     return (variance(v,capteur))**(0.5)
@@ -130,6 +132,30 @@ def ecart_type(v,capteur):
 def mediane(v,capteur):
     sdata=data.sort_values(v)
     if capteur==0:
-        return data[v].loc[int(np.around((len(sdata[v])+1)/2,0))]
+        y=data[v].loc[int(np.around((len(sdata[v])+1)/2,0))]
+        return y
     else:
-        return data[v].loc[int(np.around((len(sdata[sdata.id==capteur][v])+1)/2,0))]
+        y=data[v].loc[int(np.around((len(sdata[sdata.id==capteur][v])+1)/2,0))]
+        return y
+
+def caracteristiques(v,capteur):
+    print ("max="+str(max(v,capteur)))
+    print ('min='+str(min(v,capteur)))
+    print ('moyenne='+str(moyenne(v,capteur)))
+    print ('variance='+str(variance(v,capteur)))
+    print ('écart-type='+str(ecart_type(v,capteur)))
+    print ('médiane='+str(mediane(v,capteur)))
+    plt.axhline(moyenne(v,capteur),color='red')
+    plt.axhline(mediane(v,capteur), color='pink')
+    for i in range(len(data[data[v]==max(v,capteur)][data.id==capteur].index)):
+        matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at.loc[data[data[v]==max(v,capteur)][data.id==capteur].index[i]],"%Y-%m-%d %H:%M:%S%z")),max(v,capteur),color='brown')
+    for i in range(len(data[data[v]==min(v,capteur)][data.id==capteur].index)):
+        matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at.loc[data[data[v]==min(v,capteur)][data.id==capteur].index[i]],"%Y-%m-%d %H:%M:%S%z")),min(v,capteur),color='grey')
+    plt.show()
+
+# for row in data:
+#     print(row)
+# # row correspond aux colonnes qui composent le fichier (data)
+
+# for index,row in data.iterrows():
+#     print (row['temp'])
