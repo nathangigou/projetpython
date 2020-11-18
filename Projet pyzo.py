@@ -22,7 +22,7 @@ def courbes(v,capteur):
     x=matplotlib.dates.date2num(ld)
     y=data[data.id==capteur][v]
     matplotlib.pyplot.plot_date(x,y,linestyle='solid', markersize=0)
-    plt.xticks(rotation='vertical')
+    plt.xticks(rotation=45)
     plt.xlabel("temps")
     plt.ylabel(v)
     plt.title(v+" en fonction du temps")
@@ -145,12 +145,13 @@ def caracteristiques(v,capteur):
     print ('variance='+str(variance(v,capteur)))
     print ('écart-type='+str(ecart_type(v,capteur)))
     print ('médiane='+str(mediane(v,capteur)))
-    plt.axhline(moyenne(v,capteur),color='red')
-    plt.axhline(mediane(v,capteur), color='pink')
+    plt.axhline(moyenne(v,capteur),color='red',label='moyenne')
+    plt.axhline(mediane(v,capteur), color='pink',label='médiane')
     for i in range(len(data[data[v]==max(v,capteur)][data.id==capteur].index)):
         matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at.loc[data[data[v]==max(v,capteur)][data.id==capteur].index[i]],"%Y-%m-%d %H:%M:%S%z")),max(v,capteur),color='brown')
     for i in range(len(data[data[v]==min(v,capteur)][data.id==capteur].index)):
         matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at.loc[data[data[v]==min(v,capteur)][data.id==capteur].index[i]],"%Y-%m-%d %H:%M:%S%z")),min(v,capteur),color='grey')
+    plt.legend()
     plt.show()
 
 # for row in data:
@@ -159,3 +160,11 @@ def caracteristiques(v,capteur):
 
 # for index,row in data.iterrows():
 #     print (row['temp'])
+
+def alpha(t,h):
+    return (17,27*t/(237,7+t))+np.log(h)
+
+def trosee(t,h):
+    return (237,7*alpha(t,h))/(17,27-alpha(t,h))
+
+def humidex(t,h):
