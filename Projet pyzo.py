@@ -4,7 +4,7 @@ import matplotlib
 from matplotlib import pyplot as plt
 import datetime
 
-data = pd.read_csv("/Users/carll/Documents/EIVP/IVP1/Python/Projet/EIVP_KM.csv",delimiter=";")
+data = pd.read_csv("/Users/natha/Documents/EIVP/Algorithmique/Projet python/EIVP_KM",delimiter=";")
 
 
 def Converttime(n):
