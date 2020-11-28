@@ -115,19 +115,6 @@ def variance(v,capteur):
 def ecart_type(v,capteur):
     return (variance(v,capteur))**(0.5)
 
-# def quicksort(t):
-#     if t == []:
-#         return []
-#     else:
-#         pivot = t[0]
-#     t1 = []
-#     t2 = []
-#     for x in t[1:]:
-#         if x<pivot:
-#            t1.append(x)
-#         else:
-#            t2.append(x)
-#     return quicksort(t1)+[pivot]+quicksort(t2)
 
 def mediane(v,capteur):
     sdata=data.sort_values(v)
@@ -162,9 +149,42 @@ def caracteristiques(v,capteur):
 #     print (row['temp'])
 
 def alpha(t,h):
-    return (17,27*t/(237,7+t))+np.log(h)
+    return ((17.27*t)/(237.7+t))+np.log(h)
 
 def trosee(t,h):
-    return (237,7*alpha(t,h))/(17,27-alpha(t,h))
+    return (237.7*alpha(t,h))/(17.27-alpha(t,h))
 
 def humidex(t,h):
+    return t+0.5555*(6.11*np.exp(5417.7530*(1/273.16-1/(273.15+trosee(t,h))))-10)
+
+def Lhumidex(capteur):
+    if capteur==0:
+        L=[]
+        for i in range(len(data)):
+            L.append(humidex(data.temp[i],data.humidity[i]))
+        return L
+    else :
+        L=[]
+        pr=data[data.id==capteur].index[0]
+        for i in range(len(data[data.id==capteur])):
+            L.append(humidex(data[data.id==capteur].temp[i+pr],data[data.id==capteur].humidity[i+pr]))
+        return L
+
+def correlation(x,y,capteur):
+    sx=ecart_type(x,capteur)
+    sy=ecart_type(y,capteur)
+    mx=moyenne(x,capteur)
+    my=moyenne(y,capteur)
+    if capteur==0:
+        s=0
+        for i in range(len(data)):
+            s+=(data[x][i]-mx)*(data[y][i]-my)
+        return s/(len(data)*sx*sy)
+    else :
+        s=0
+        pr=data[data.id==capteur].index[0]
+        for i in range(len(data[data.id==capteur])):
+            s+=(data[data.id==capteur][x][i+pr]-mx)*(data[data.id==capteur][y][i+pr]-my)
+        return s/(len(data[data.id==capteur])*sx*sy)
+
+
