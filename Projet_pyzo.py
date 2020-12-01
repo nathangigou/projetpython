@@ -28,7 +28,6 @@ def courbes(v,capteur):
     plt.ylabel(v)
     plt.title(v+" en fonction du temps")
     plt.legend()
-    plt.show()
 
 # x=matplotlib.dates.date2num(ld)
 # y=data[data.id==2].lum
@@ -128,6 +127,7 @@ def mediane(v,capteur):
         return y
 
 def caracteristiques(v,capteur):
+    courbes(v,capteur)
     M=max(v,capteur)
     m=min(v,capteur)
     mo=moyenne(v,capteur)
@@ -141,17 +141,19 @@ def caracteristiques(v,capteur):
     print ('écart-type='+str(et))
     print ('médiane='+str(me))
 
-    plt.axhline(moyenne(v,capteur),color='red',label='moyenne')
+    plt.axhline(moyenne(v,capteur),color='red')
     plt.annotate('moyenne capteur'+str(capteur),xy=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),mo),xycoords='data',xytext=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),mo+0.01*mo),textcoords='data',color='red',fontsize=5)
 
-    plt.axhline(mediane(v,capteur), color='pink',label='médiane')
+    plt.axhline(mediane(v,capteur), color='pink')
     plt.annotate('médiane capteur'+str(capteur),xy=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),me),xycoords='data',xytext=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),me+0.01*me),textcoords='data', color='pink',fontsize=5)
 
     for i in range(len(data[data.id==capteur][data[v]==M].index)):
         matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at[data[data.id==capteur][data[v]==M].index[i]],"%Y-%m-%d %H:%M:%S%z")),M,color='brown')
+    plt.annotate('max capteur'+str(capteur),xy=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),M),xycoords='data',xytext=(datetime.datetime(2019, 8, 9),M),textcoords='data', color='brown',fontsize=5)
+
     for i in range(len(data[data.id==capteur][data[v]==m].index)):
         matplotlib.pyplot.plot_date(matplotlib.dates.date2num(datetime.datetime.strptime(data.sent_at[data[data.id==capteur][data[v]==m].index[i]],"%Y-%m-%d %H:%M:%S%z")),m,color='grey')
-    plt.show()
+    plt.annotate('min capteur'+str(capteur),xy=(datetime.datetime(2019, 8, 18, 13, 2, 36, tzinfo=datetime.timezone(datetime.timedelta(seconds=7200))),m),xycoords='data',xytext=(datetime.datetime(2019, 8, 9),m),textcoords='data', color='grey',fontsize=5)
 
 # for row in data:
 #     print(row)
@@ -181,6 +183,18 @@ def Lhumidex(capteur):
         for i in range(len(data[data.id==capteur])):
             L.append(humidex(data[data.id==capteur].temp[i+pr],data[data.id==capteur].humidity[i+pr]))
         return L
+
+def courbeshumidex(capteur):
+    ld=convertdatetime(capteur)
+    x=matplotlib.dates.date2num(ld)
+    y=Lhumidex(capteur)
+    matplotlib.pyplot.plot_date(x,y,linestyle='solid', markersize=0,label='capteur'+str(capteur))
+    plt.xticks(rotation=45)
+    plt.xlabel("temps")
+    plt.ylabel('humidex')
+    plt.title("humidex en fonction du temps")
+    plt.legend()
+
 
 def ccorrelation(x,y,capteur):
     sx=ecart_type(x,capteur)
@@ -221,9 +235,8 @@ def comparcourbes(x,y,capteur):
     matplotlib.pyplot.plot_date(x1,y2,linestyle='solid', markersize=0, color='orange')
     ax2.set_ylabel(y,color='orange')
 
-    plt.title(x+' & '+y+" en fonction du temps")
+    plt.title(x+' & '+y+" en fonction du temps pour la capteur "+str(capteur))
     fig.tight_layout()
-    plt.show()
 
 def timeencommun(capteur1,capteur2):
     L1=convertdatetime(capteur1)
@@ -276,19 +289,114 @@ def similarites(v,capteur1,capteur2):
     courbes(v,capteur2)
     plt.show()
 
+def courbessys(v):
+    for i in range(1,7):
+        courbes(v,i)
+    plt.show()
+
+def caracteristiquessys(v):
+    for i in range(1,7):
+        plt.figure()
+        caracteristiques(v,i)
+        plt.show()
+
+def courbeshumidexsys():
+    for i in range(1,7):
+        courbeshumidex(i)
+    plt.show()
+
+def correlationsys(x,y):
+    for i in range(1,7):
+        plt.figure()
+        correlation(x,y,i)
+
+
 
 import sys
-if sys.argv[1]=='courbes':
-    return print(courbes(sys.argv[2],sys.argv[3]))
-if sys.argv[1]=='caracteristiques':
-    return caracteristiques(sys.argv[2],sys.argv[3])
-if sys.argv[1]=='Lhumidex':
-    return Lhumidex(sys.argv[2])
-if sys.argv[1]=='correlation':
-    return correlation(sys.argv[2],sys.argv[3],sys.argv[4])
-if sys.argv[1]=='similarites':
-    return similarites(sys.argv[2],sys.argv[3],sys.argv[4])
+if sys.argv[1]=='display':
+    if sys.argv[2]=='température':
+        courbessys('temp')
+    if sys.argv[2]=='niveau_sonore':
+        courbessys('noise')
+    if sys.argv[2]=='luminosité':
+        courbessys('lum')
+    if sys.argv[2]=='co2':
+        courbessys('co2')
+    if sys.argv[2]=='humidité':
+        courbessys('humidity')
+    if sys.argv[2]=='humidex':
+        courbeshumidexsys()
 
+if sys.argv[1]=='displayStat':
+    if sys.argv[2]=='température':
+        caracteristiquessys('temp')
+    if sys.argv[2]=='niveau_sonore':
+        caracteristiquessys('noise')
+    if sys.argv[2]=='luminosité':
+        caracteristiquessys('lum')
+    if sys.argv[2]=='co2':
+        caracteristiquessys('co2')
+    if sys.argv[2]=='humidité':
+        caracteristiquessys('humidity')
+
+if sys.argv[1]=='corrélation':
+    if sys.argv[2]=='température':
+        if sys.argv[3]=='niveau_sonore':
+            correlationsys('temp','noise')
+        if sys.argv[3]=='luminosité':
+            correlationsys('temp','lum')
+        if sys.argv[3]=='co2':
+            correlationsys('temp','co2')
+        if sys.argv[3]=='humidité':
+            correlationsys('temp','humidity')
+    if sys.argv[2]=='niveau_sonore':
+        if sys.argv[3]=='température':
+            correlationsys('noise','temp')
+        if sys.argv[3]=='luminosité':
+            correlationsys('noise','lum')
+        if sys.argv[3]=='co2':
+            correlationsys('noise','co2')
+        if sys.argv[3]=='humidité':
+            correlationsys('noise','humidity')
+    if sys.argv[2]=='luminosité':
+        if sys.argv[3]=='niveau_sonore':
+            correlationsys('lum','noise')
+        if sys.argv[3]=='température':
+            correlationsys('lum','temp')
+        if sys.argv[3]=='co2':
+            correlationsys('lum','co2')
+        if sys.argv[3]=='humidité':
+            correlationsys('lum','humidity')
+    if sys.argv[2]=='co2':
+        if sys.argv[3]=='niveau_sonore':
+            correlationsys('co2','noise')
+        if sys.argv[3]=='température':
+            correlationsys('co2','temp')
+        if sys.argv[3]=='luminosité':
+            correlationsys('co2','lum')
+        if sys.argv[3]=='humidité':
+            correlationsys('co2','humidity')
+    if sys.argv[2]=='humidité':
+        if sys.argv[3]=='niveau_sonore':
+            correlationsys('humidity','noise')
+        if sys.argv[3]=='température':
+            correlationsys('humidity','temp')
+        if sys.argv[3]=='luminosité':
+            correlationsys('humidity','lum')
+        if sys.argv[3]=='co2':
+            correlationsys('humidity','co2')
+
+if sys.argv[1]=='similarités':
+    if sys.argv[2]=='température':
+        similarites('temp',int(sys.argv[3]),int(sys.argv[4]))
+    if sys.argv[2]=='niveau_sonore':
+        similarites('noise',int(sys.argv[3]),int(sys.argv[4]))
+    if sys.argv[2]=='luminosité':
+        similarites('lum',int(sys.argv[3]),int(sys.argv[4]))
+    if sys.argv[2]=='co2':
+        similarites('co2',int(sys.argv[3]),int(sys.argv[4]))
+    if sys.argv[2]=='humidité':
+        similarites('humidity',int(sys.argv[3]),int(sys.argv[4]))
 
 
 
